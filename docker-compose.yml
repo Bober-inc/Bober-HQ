@@ -1,0 +1,11 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    volumes:
+      - .:/app
+      - ./data:/app/Data/lego.population.csv  # Explicitly mount data directory
+    environment:
+      - PYTHONUNBUFFERED=1
+    container_name: bober-hq
