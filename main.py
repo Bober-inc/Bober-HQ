@@ -1,7 +1,7 @@
 import sys
 from DAO import data_loader
 from DAO.data_class import Data
-from graphing import analyze_age_value,visualize_3d_regression, perform_cluster_analysis, pieces_str_lit, price_str_lit
+from graphing import analyze_age_value,visualize_3d_regression, perform_cluster_analysis, animate_4d_plot, pieces_str_lit, price_str_lit
 
 
 # hvilke lego aldersgrupper gir mest lego per krone
@@ -12,7 +12,8 @@ def main() -> None:
     
     #age_groups = analyze_age_value(data_set)
     #visualize_3d_regression(age_groups)
-    perform_cluster_analysis(data_set)
+    #perform_cluster_analysis(data_set)
+    animate_4d_plot(data_set)
     
     
     """

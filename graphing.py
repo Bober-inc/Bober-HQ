@@ -4,9 +4,11 @@ from sklearn.cluster import KMeans
 from sklearn.preprocessing import StandardScaler
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
+import matplotlib.animation as animation
 
 pieces_str_lit = 'total_pieces'
 price_str_lit = 'total_price'
+INTERVAL_MS = 1
 
 def analyze_age_value(lego_sets) -> dict[int, dict[str, int]]:
     
@@ -159,3 +161,68 @@ def visualize_3d_regression(age_groups):
     plt.figtext(0.02, 0.05, equation, fontsize=10)
     
     plt.show()
+    
+    
+def animate_4d_plot(lego_sets):
+    data = []
+    for lego_set in lego_sets:
+        data.append([
+            lego_set.get_pieces(),
+            lego_set.get_unique_pieces(),
+            lego_set.get_price(),
+            lego_set.get_age_group()
+        ])
+    
+    data = np.array(data)
+    data = data[data[:, 3].argsort()]  # Sort by age (4th column)
+    
+    fig = plt.figure(figsize=(12, 8))
+    ax = fig.add_subplot(111, projection='3d')
+
+    def update(frame):
+        ax.clear()
+        
+        # Color points based on age
+        colors = data[:, 3] / np.max(data[:, 3])  # Normalize ages for color mapping
+        
+        # Plot points up to current frame
+        scatter = ax.scatter(data[:frame, 0], 
+                           data[:frame, 1], 
+                           data[:frame, 2],
+                           c=colors[:frame],
+                           cmap='viridis')
+        
+        ax.set_xlabel('Pieces')
+        ax.set_ylabel('Unique Pieces')
+        ax.set_zlabel('Price ($)')
+        ax.set_title(f'LEGO Sets Analysis\nAge Group: {data[frame-1, 3]}+')
+        
+        # Add colorbar if it doesn't exist
+        if not hasattr(fig, 'colorbar'):
+            fig.colorbar = plt.colorbar(scatter)
+            fig.colorbar.set_label('Age Group')
+            
+        # Set consistent axis limits
+        ax.set_xlim([0, np.max(data[:, 0])])
+        ax.set_ylim([0, np.max(data[:, 1])])
+        ax.set_zlim([0, np.max(data[:, 2])])
+        
+        # Add grid
+        ax.grid(True)
+        
+        return scatter,
+
+    # Create animation
+    anim = animation.FuncAnimation(fig, 
+                                 update,
+                                 frames=len(data),
+                                 interval=INTERVAL_MS,  # 100ms between frames
+                                 blit=False,
+                                 repeat=True)
+    
+    plt.show()
+    
+    # Optionally save animation
+    # anim.save('lego_4d.gif', writer='pillow')
+
+    return anim
